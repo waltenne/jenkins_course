@@ -86,7 +86,7 @@
 
 <pre>
 1. Clone o repositório:
-   git clone https://github.com/seu-repo/curso-jenkins.git
+   git clone https://github.com/waltenne/jenkins_course.git
 
 2. Acesse o primeiro módulo:
    cd curso-jenkins/docs/module_01

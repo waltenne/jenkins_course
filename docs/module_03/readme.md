@@ -75,7 +75,7 @@ stage('Checkout') {
     steps {
         git branch: 'main',
         credentialsId: 'git-creds',
-        url: 'https://github.com/seu/repo.git'
+        url: 'https://github.com/waltenne/jenkins_course.git'
     }
 }
 ```
@@ -83,7 +83,7 @@ stage('Checkout') {
 ```
 stage('Checkout') {
     steps {
-        sh ''' git clone -b main https://github.com/seu/repo.git '''
+        sh ''' git clone -b main https://github.com/waltenne/jenkins_course.git '''
     }
 }
 ```
