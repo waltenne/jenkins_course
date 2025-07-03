@@ -10,12 +10,15 @@ import java.io.PrintWriter;
 @WebServlet("/hello")
 public class HelloController extends HttpServlet {
     
+    // Adicione este método para os testes
+    public String determineName(String name) {
+        return (name == null || name.trim().isEmpty()) ? "World" : name;
+    }
+    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String name = req.getParameter("name");
-        if (name == null || name.trim().isEmpty()) {
-            name = "World";
-        }
+        name = determineName(name); // Reuse o método
         
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();

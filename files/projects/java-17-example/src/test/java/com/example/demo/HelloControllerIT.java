@@ -3,35 +3,36 @@ package com.example.demo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloControllerIT {
+class HelloControllerIT {
     
     @Test
-    public void testDoGet() throws Exception {
-        // Mock dos objetos de requisição e resposta
+    void testDoGet() throws Exception {
+        // Cria mocks
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         
-        // Configurar o mock para retornar um parâmetro "name"
+        // Configura comportamento
         when(request.getParameter("name")).thenReturn("Jenkins");
         
-        // Capturar a saída
+        // Captura a saída
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(writer);
         
-        // Executar o método
-        HelloController controller = new HelloController();
+        // Executa o teste
+        com.example.demo.controllers.HelloController controller = 
+            new com.example.demo.controllers.HelloController();
         controller.doGet(request, response);
         
-        // Verificar resultados
+        // Verifica resultados
         writer.flush();
         assertTrue(stringWriter.toString().contains("Hello, Jenkins!"));
     }
