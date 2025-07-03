@@ -11,10 +11,10 @@ import java.io.StringWriter;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class HelloControllerIT {
+public class HelloControllerIT {
     
     @Test
-    void testDoGet() throws Exception {
+    public void testDoGet() throws Exception {
         // Cria mocks
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
