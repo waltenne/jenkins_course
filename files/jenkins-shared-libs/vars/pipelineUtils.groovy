@@ -16,9 +16,15 @@ def libCheckout(Map config) {
     
     checkout([
         $class: 'GitSCM',
-        branches: [[name: config.branchName ?: 'main']],
-        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: config.relativeDir]],
-        userRemoteConfigs: [[url: config.repoUrl]]
+        branches: [[name: '*/your-branch']],
+        extensions: [
+            [$class: 'CloneOption', depth: 1, shallow: true, noTags: true],
+            [$class: 'CleanBeforeCheckout'],
+            [$class: 'LocalBranch']
+        ],
+        userRemoteConfigs: [[url: 'your-repo-url']],
+        doGenerateSubmoduleConfigurations: false,
+        submoduleCfg: []
     ])
 }
 
