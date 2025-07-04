@@ -134,50 +134,41 @@ pipeline {
         stage('Generate Release Notes') {
             steps {
                 script {
-                    // Configura ambiente UTF-8 para todos os comandos
-                    withEnv(['LANG=en_US.UTF-8', 'LC_ALL=en_US.UTF-8', 'JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8']) {
-                        // Obtém histórico de commits com encoding correto
+                    withEnv(['LANG=en_US.UTF-8', 'LC_ALL=en_US.UTF-8']) {
+                        // Obtém o changelog
                         def changelog = sh(
                             script: 'git log --pretty=format:"- %s (%h)" HEAD',
-                            returnStdout: true,
-                            encoding: 'UTF-8'
+                            returnStdout: true
                         ).trim()
                         
-                        // Constrói conteúdo com caracteres especiais corretos
-                        def releaseContent = """# Release ${env.RELEASE_VERSION}
-                        
-        ## Mudanças
-        ${changelog}
+                        // Cria conteúdo em texto puro (alternativa segura)
+                        def plainTextDesc = """RELEASE ${env.RELEASE_VERSION}
+============================
+CHANGES:
+${changelog}
 
-        ## Informações da Build
-        - Job: ${env.JOB_NAME}
-        - Build: ${env.BUILD_NUMBER}
-        - Data: ${new Date().format("yyyy-MM-dd HH:mm:ss z", TimeZone.getTimeZone('America/Sao_Paulo'))}
-        """
-                        
-                        // Escreve arquivo garantindo UTF-8 (duas abordagens alternativas)
+BUILD INFORMATION:
+- Job: ${env.JOB_NAME}
+- Build: ${env.BUILD_NUMBER}
+- Date: ${new Date().format("yyyy-MM-dd HH:mm:ss z", TimeZone.getTimeZone('America/Sao_Paulo'))}
+"""
+
+                        def htmlDesc = """
+<div style="font-family: Arial, sans-serif; line-height: 1.5;">
+<h3 style="margin-bottom: 5px;">RELEASE ${env.RELEASE_VERSION}</h3>
+<hr style="margin: 5px 0 10px 0;">
+<strong>CHANGES:</strong><br>
+<pre style="margin: 5px 0; font-family: monospace;">${changelog}</pre>
+<hr style="margin: 5px 0 10px 0;">
+</div>
+"""
+
                         try {
-                            // Método preferencial (Jenkins moderno)
-                            writeFile(
-                                file: "${env.PROJECT_DIR}/RELEASE_NOTES.md",
-                                text: releaseContent,
-                                encoding: 'UTF-8'
-                            )
+                            currentBuild.description = htmlDesc
                         } catch (Exception e) {
-                            // Fallback para Jenkins mais antigos
-                            sh """#!/bin/bash
-                                cat > "${env.PROJECT_DIR}/RELEASE_NOTES.md" << 'EOF'
-        ${releaseContent}
-        EOF
-                            """
+                            echo "HTML não suportado, usando texto simples"
+                            currentBuild.description = plainTextDesc
                         }
-                        
-                        // Verificação do arquivo gerado
-                        echo "Conteúdo do arquivo (verificação UTF-8):"
-                        sh "cat ${env.PROJECT_DIR}/RELEASE_NOTES.md"
-                        sh "file -i ${env.PROJECT_DIR}/RELEASE_NOTES.md || echo 'Comando file não disponível'"
-                        
-                        archiveArtifacts artifacts: "${env.PROJECT_DIR}/RELEASE_NOTES.md"
                     }
                 }
             }

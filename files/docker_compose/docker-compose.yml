@@ -11,7 +11,7 @@ services:
       - "50000:50000"
     environment:
       - TZ=America/Sao_Paulo
-      - JAVA_OPTS=-Xmx2g -XX:+UseG1GC -Djenkins.install.runSetupWizard=false
+      - JAVA_OPTS=-Xmx2g -XX:+UseG1GC -Djenkins.install.runSetupWizard=false -Dfile.encoding=UTF-8
     volumes:
       - ./jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
