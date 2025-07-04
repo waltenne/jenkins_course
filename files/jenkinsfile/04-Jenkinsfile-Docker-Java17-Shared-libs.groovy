@@ -1,4 +1,4 @@
-@Library('my-shared-library') _  // substitua pelo nome real da sua shared library
+@Library('jenkins-shared-libs') _  // substitua pelo nome real da sua shared library
 
 pipeline {
     agent { label 'Docker' }
@@ -128,10 +128,8 @@ pipeline {
                     )
                     pipelineUtils.logSummary()
                 }
+                echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
             }
-            echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
-
-        }
         failure {
             echo "Build ${env.BUILD_NUMBER} falhou!"
         }
