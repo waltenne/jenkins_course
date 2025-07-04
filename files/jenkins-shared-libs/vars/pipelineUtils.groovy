@@ -107,12 +107,6 @@ private List<Integer> parseVersion(String version) {
     return parts
 }
 
-def call(Map config) {
-    // Método call permite chamar pipelineUtils(config) diretamente
-    // Implementação padrão pode ser o build ou outro método principal
-    build(config)
-}
-
 def build(Map config) {
     def defaults = [
         projectDir: 'files/projects/java-17-example',
