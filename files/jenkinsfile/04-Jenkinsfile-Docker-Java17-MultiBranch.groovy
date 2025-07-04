@@ -126,23 +126,7 @@ pipeline {
 }
 
 properties([
-    dashboardView(
-        columns: [
-            { it -> hudson.views.StatusColumn() },
-            { it -> hudson.views.WeatherColumn() },
-            { it -> hudson.views.JobColumn() },
-            { it -> hudson.views.LastSuccessColumn() },
-            { it -> hudson.views.LastFailureColumn() },
-            { it -> hudson.views.BuildButtonColumn() }
-        ],
-        portlets: [
-            { it -> hudson.plugins.view.dashboard.test.TestStatisticsPortlet() },
-            { it -> new hudson.plugins.view.dashboard.core.IframePortlet(
-                url: "${env.JENKINS_URL}job/${env.JOB_NAME}/lastSuccessfulBuild/artifact/release_info.html",
-                height: "400px"
-            )}
-        ],
-        includeRegex: '.*',
-        recurse: false
-    )
+    pipelineTriggers([]),
+    buildDiscarder(logRotator(numToKeepStr: '10')),
+    [$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'hudson.tasks.LogRotator', numToKeepStr: '10']]
 ])
