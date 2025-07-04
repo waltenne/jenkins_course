@@ -126,21 +126,23 @@ pipeline {
 }
 
 properties([
-    dashboardProperties(
+    dashboardView(
         columns: [
-            statusColumn(),
-            weatherColumn(),
-            jobColumn(),
-            lastSuccessColumn(),
-            lastFailureColumn(),
-            buildButtonColumn()
+            { it -> hudson.views.StatusColumn() },
+            { it -> hudson.views.WeatherColumn() },
+            { it -> hudson.views.JobColumn() },
+            { it -> hudson.views.LastSuccessColumn() },
+            { it -> hudson.views.LastFailureColumn() },
+            { it -> hudson.views.BuildButtonColumn() }
         ],
         portlets: [
-            testStatisticsPortlet(),
-            iframePortlet(
+            { it -> hudson.plugins.view.dashboard.test.TestStatisticsPortlet() },
+            { it -> new hudson.plugins.view.dashboard.core.IframePortlet(
                 url: "${env.JENKINS_URL}job/${env.JOB_NAME}/lastSuccessfulBuild/artifact/release_info.html",
-                height: 400
-            )
-        ]
+                height: "400px"
+            )}
+        ],
+        includeRegex: '.*',
+        recurse: false
     )
 ])
