@@ -180,20 +180,15 @@ def generateReleaseNotes() {
             returnStdout: true
         ).trim()
 
-        def plainTextDesc = """RELEASE ${env.RELEASE_VERSION}
+        def plainTextDesc = """Release ${env.RELEASE_VERSION}
 ============================
 CHANGES:
 ${changelog}
-
-BUILD INFORMATION:
-- Job: ${env.JOB_NAME}
-- Build: ${env.BUILD_NUMBER}
-- Date: ${new Date().format("yyyy-MM-dd HH:mm:ss z", TimeZone.getTimeZone('America/Sao_Paulo'))}
 """
 
         def htmlDesc = """
 <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-<h3 style="margin-bottom: 5px;">RELEASE ${env.RELEASE_VERSION}</h3>
+<h3 style="margin-bottom: 5px;">Release ${env.RELEASE_VERSION}</h3>
 <hr style="margin: 5px 0 10px 0;">
 <strong>CHANGES:</strong><br>
 <pre style="margin: 5px 0; font-family: monospace;">${changelog}</pre>
