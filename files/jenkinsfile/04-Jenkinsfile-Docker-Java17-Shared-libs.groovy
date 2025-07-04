@@ -1,8 +1,5 @@
 @Library('jenkins-shared-libs') _
 
-// Inicializa a shared library
-def utils = new PipelineUtils(this)
-
 pipeline {
     agent { label 'Docker' }
 
@@ -15,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    utils.libCheckout(
+                    pipelineUtils.libCheckout(
                         repoUrl: 'https://github.com/waltenne/jenkins_course.git',
                         branchName: 'doc/jenkins',
                         relativeDir: '.'
@@ -27,7 +24,7 @@ pipeline {
         stage('Validate Commit') {
             steps {
                 script {
-                    utils.validateCommit(env.COMMIT_PATTERN)
+                    pipelineUtils.validateCommit(env.COMMIT_PATTERN)
                 }
             }
         }
@@ -35,7 +32,7 @@ pipeline {
         stage('Increment Version') {
             steps {
                 script {
-                    env.RELEASE_VERSION = utils.incrementVersion(env.PROJECT_DIR)
+                    env.RELEASE_VERSION = pipelineUtils.incrementVersion(env.PROJECT_DIR)
                     echo "Versão liberada: ${env.RELEASE_VERSION}"
                 }
             }
@@ -44,7 +41,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    utils.build(
+                    pipelineUtils.build(
                         projectDir: env.PROJECT_DIR,
                         goals: ['clean', 'package'],
                         quiet: true,
@@ -57,7 +54,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 script {
-                    utils.unitTests(
+                    pipelineUtils.unitTests(
                         projectDir: env.PROJECT_DIR,
                         quiet: true
                     )
@@ -68,7 +65,7 @@ pipeline {
         stage('Integration Tests') {
             steps {
                 script {
-                    utils.integrationTests(
+                    pipelineUtils.integrationTests(
                         projectDir: env.PROJECT_DIR,
                         mavenProfiles: ['integration'],
                         quiet: true
@@ -80,7 +77,7 @@ pipeline {
         stage('Archive Artifact') {
             steps {
                 script {
-                    utils.archiveArtifact(
+                    pipelineUtils.archiveArtifact(
                         projectDir: env.PROJECT_DIR,
                         pattern: 'target/*.war'
                     )
@@ -91,7 +88,7 @@ pipeline {
         stage('Generate Release Notes') {
             steps {
                 script {
-                    utils.generateReleaseNotes()
+                    pipelineUtils.generateReleaseNotes()
                 }
             }
         }
@@ -102,7 +99,7 @@ pipeline {
             }
             steps {
                 script {
-                    utils.deployToTomcat(
+                    pipelineUtils.deployToTomcat(
                         projectDir: env.PROJECT_DIR,
                         releaseVersion: env.RELEASE_VERSION
                     )
@@ -114,24 +111,24 @@ pipeline {
     post {
         success {
             script {
-                utils.processTestReports(
+                pipelineUtils.processTestReports(
                     projectDir: env.PROJECT_DIR,
                     cleanAfter: true,
                     quiet: true
                 )
-                utils.logSummary()
+                pipelineUtils.logSummary()
                 echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
             }
         }
         failure {
             script {
-                utils.logSummary()
+                pipelineUtils.logSummary()
                 echo "Build ${env.BUILD_NUMBER} falhou!"
             }
         }
         unstable {
             script {
-                utils.logSummary()
+                pipelineUtils.logSummary()
                 echo "Build ${env.BUILD_NUMBER} está instável!"
             }
         }
