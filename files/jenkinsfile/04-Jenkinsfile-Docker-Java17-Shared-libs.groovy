@@ -12,11 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    pipelineUtils.checkout(
-                        branch: 'doc/jenkins',
-                        repoUrl: 'https://github.com/waltenne/jenkins_course.git',
-                        targetDir: '.'
-                    )
+                    pipelineUtils.libCheckout('https://github.com/waltenne/jenkins_course.git', 'doc/jenkins', '.')
                 }
             }
         }
