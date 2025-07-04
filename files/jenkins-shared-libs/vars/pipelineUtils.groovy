@@ -1,4 +1,4 @@
-def checkout(String repoUrl, String branchName = 'main') {
+def libCheckout(String repoUrl, String branchName = 'main') {
     if (!repoUrl?.trim()) {
         error "O parâmetro 'repoUrl' é obrigatório e não pode ser vazio!"
     }
