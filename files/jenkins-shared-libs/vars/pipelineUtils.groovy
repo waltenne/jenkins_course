@@ -2,16 +2,23 @@
  * Métodos utilitários para pipelines Jenkins
  */
 
-def libCheckout(String repoUrl, String branchName = 'main', String relativeDir = '.') {
-    if (!repoUrl?.trim()) {
+def libCheckout(Map config) {
+    def defaults = [
+        repoUrl: null,
+        branchName: 'main',
+        relativeDir: '.'
+    ]
+    config = defaults + config
+    
+    if (!config.repoUrl?.trim()) {
         error "O parâmetro 'repoUrl' é obrigatório e não pode ser vazio!"
     }
     
     checkout([
         $class: 'GitSCM',
-        branches: [[name: branchName ?: 'main']],
-        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: relativeDir]],
-        userRemoteConfigs: [[url: repoUrl]]
+        branches: [[name: config.branchName ?: 'main']],
+        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: config.relativeDir]],
+        userRemoteConfigs: [[url: config.repoUrl]]
     ])
 }
 
@@ -291,4 +298,9 @@ def logSummary() {
             "Duração: ${duration}\n" +
             "URL: ${env.BUILD_URL}"
     echo msg
+}
+
+def call(Map config) {
+    // Implementação padrão quando chamado como pipelineUtils(config)
+    return build(config)
 }
