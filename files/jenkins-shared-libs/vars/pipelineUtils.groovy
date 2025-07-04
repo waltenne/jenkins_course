@@ -205,20 +205,6 @@ BUILD INFORMATION:
     }
 }
 
-def deployToTomcat(projectDir = 'files/projects/java-17-example') {
-    dir(projectDir) {
-        def artifactName = "jenkins-demo-${env.RELEASE_VERSION}.war"
-        def warFile = "target/${artifactName}"
-        if (fileExists(warFile)) {
-            sh "mkdir -p /opt/tomcat/webapps/"
-            sh "cp ${warFile} /opt/tomcat/webapps/"
-            echo "Aplicação ${artifactName} implantada no Tomcat"
-        } else {
-            error "Arquivo WAR não encontrado: ${warFile}"
-        }
-    }
-}
-
 def deployToTomcat(projectDir = 'files/projects/java-17-example', releaseVersion = null, dryRun = false, quiet = true) {
     dir(projectDir) {
         def version = releaseVersion ?: env.RELEASE_VERSION
