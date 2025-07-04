@@ -298,3 +298,26 @@ def call(Map config) {
     // Implementação padrão quando chamado como pipelineUtils(config)
     return build(config)
 }
+
+
+// Métodos específicos do Jenkinsfile (não vão para a shared lib)
+def generateReleaseDashboard() {
+    def changelog = sh(
+        script: 'git log -1 --pretty=format:"<li>%s (%h) - %an</li>"',
+        returnStdout: true
+    ).trim()
+    
+    return """
+    <div style='font-family: Arial; padding: 10px; background: #f5f5f5; border: 1px solid #ddd;'>
+        <h3>Release ${env.RELEASE_VERSION}</h3>
+        <h4>Changes:</h4>
+        <ul>${changelog}</ul>
+        <p><strong>Build:</strong> #${env.BUILD_NUMBER}</p>
+    </div>
+    """
+}
+
+def archiveReleaseInfo() {
+    writeFile file: 'release_info.html', text: currentBuild.description
+    archiveArtifacts artifacts: 'release_info.html'
+}

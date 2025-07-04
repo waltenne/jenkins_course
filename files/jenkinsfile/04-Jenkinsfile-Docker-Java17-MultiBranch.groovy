@@ -106,6 +106,8 @@ pipeline {
                 )
                 pipelineUtils.logSummary()
                 echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
+                currentBuild.description = generateReleaseDashboard()
+                archiveReleaseInfo()
             }
         }
         failure {
@@ -122,3 +124,23 @@ pipeline {
         }
     }
 }
+
+properties([
+    dashboardProperties(
+        columns: [
+            statusColumn(),
+            weatherColumn(),
+            jobColumn(),
+            lastSuccessColumn(),
+            lastFailureColumn(),
+            buildButtonColumn()
+        ],
+        portlets: [
+            testStatisticsPortlet(),
+            iframePortlet(
+                url: "${env.JENKINS_URL}job/${env.JOB_NAME}/lastSuccessfulBuild/artifact/release_info.html",
+                height: 400
+            )
+        ]
+    )
+])
