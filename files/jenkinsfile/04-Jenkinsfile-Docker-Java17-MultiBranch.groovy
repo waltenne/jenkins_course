@@ -5,114 +5,138 @@ properties([
     buildDiscarder(logRotator(numToKeepStr: '5'))
 ])
 
-ansiColor('xterm') {
-    pipeline {
-        agent { label 'Docker' }
+pipeline {
+    agent { label 'Docker' }
 
-        environment {
-            PROJECT_DIR = 'files/projects/java-17-example'
-            COMMIT_PATTERN = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-zA-Z0-9_-]+\\))?(!)?: .+'
-            MAVEN_OPTS = '-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn' // Reduz logs do Maven
-        }
+    options {
+        ansiColor('xterm')  // Moved inside pipeline block
+        timestamps()        // Optional if you have the plugin
+    }
 
-        stages {
-            stage('Validate Commit') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Validando mensagem de commit..."
-                        pipelineUtils.validateCommit(env.COMMIT_PATTERN)
-                    }
-                }
-            }
+    environment {
+        PROJECT_DIR = 'files/projects/java-17-example'
+        COMMIT_PATTERN = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-zA-Z0-9_-]+\\))?(!)?: .+'
+    }
 
-            stage('Increment Version') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Incrementando versão..."
-                        env.RELEASE_VERSION = pipelineUtils.incrementVersion(env.PROJECT_DIR)
-                        echo "\033[32m[SUCCESS]\033[0m Versão liberada: \033[1m${env.RELEASE_VERSION}\033[0m"
-                    }
-                }
-            }
-
-            stage('Build') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Iniciando build..."
-                        pipelineUtils.build(
-                            projectDir: env.PROJECT_DIR,
-                            goals: ['clean', 'package'],
-                            quiet: true,
-                            skipTests: true
-                        )
-                    }
-                }
-            }
-
-            stage('Unit Tests') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Executando testes unitários..."
-                        pipelineUtils.unitTests(
-                            projectDir: env.PROJECT_DIR,
-                            quiet: true
-                        )
-                    }
-                }
-            }
-
-            stage('Integration Tests') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Executando testes de integração..."
-                        pipelineUtils.integrationTests(
-                            projectDir: env.PROJECT_DIR,
-                            mavenProfiles: ['integration'],
-                            quiet: true
-                        )
-                    }
-                }
-            }
-
-            stage('Archive Artifact') {
-                steps {
-                    script {
-                        echo "\033[36m[INFO]\033[0m Arquivos sendo compactados..."
-                        pipelineUtils.archiveArtifact(
-                            projectDir: env.PROJECT_DIR,
-                            pattern: 'target/*.war'
-                        )
-                    }
-                }
-            }
-        }
-
-        post {
-            always {
+    stages {
+        stage('Validate Commit') {
+            steps {
                 script {
-                    pipelineUtils.processTestReports(
+                    pipelineUtils.validateCommit(env.COMMIT_PATTERN)
+                }
+            }
+        }
+
+        stage('Increment Version') {
+            steps {
+                script {
+                    env.RELEASE_VERSION = pipelineUtils.incrementVersion(env.PROJECT_DIR)
+                    echo "Versão liberada: ${env.RELEASE_VERSION}"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    pipelineUtils.build(
                         projectDir: env.PROJECT_DIR,
-                        cleanAfter: true,
+                        goals: ['clean', 'package'],
+                        quiet: true,
+                        skipTests: true
+                    )
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                script {
+                    pipelineUtils.unitTests(
+                        projectDir: env.PROJECT_DIR,
                         quiet: true
                     )
                 }
             }
-            success {
+        }
+
+        stage('Integration Tests') {
+            steps {
                 script {
-                    echo "\033[32m==========================================="
-                    echo "         BUILD ${env.BUILD_NUMBER} SUCESSO         "
-                    echo "===========================================\033[0m"
-                    pipelineUtils.generateReleaseNotes()
-                    currentBuild.description = pipelineUtils.generateReleaseDashboard()
+                    pipelineUtils.integrationTests(
+                        projectDir: env.PROJECT_DIR,
+                        mavenProfiles: ['integration'],
+                        quiet: true
+                    )
                 }
             }
-            failure {
+        }
+
+        stage('Archive Artifact') {
+            steps {
                 script {
-                    echo "\033[31m==========================================="
-                    echo "         BUILD ${env.BUILD_NUMBER} FALHOU          "
-                    echo "===========================================\033[0m"
+                    pipelineUtils.archiveArtifact(
+                        projectDir: env.PROJECT_DIR,
+                        pattern: 'target/*.war'
+                    )
+                }
+            }
+        }
+
+        stage('Generate Release Notes') {
+            steps {
+                script {
+                    pipelineUtils.generateReleaseNotes()
+                }
+            }
+        }
+
+        stage('Deploy to Tomcat (Optional)') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                script {
+                    pipelineUtils.deployToTomcat(
+                        projectDir: env.PROJECT_DIR,
+                        releaseVersion: env.RELEASE_VERSION
+                    )
                 }
             }
         }
     }
+
+    post {
+        success {
+            script {
+                pipelineUtils.processTestReports(
+                    projectDir: env.PROJECT_DIR,
+                    cleanAfter: true,
+                    quiet: true
+                )
+                pipelineUtils.logSummary()
+                echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
+                currentBuild.description = pipelineUtils.generateReleaseDashboard()
+                pipelineUtils.archiveReleaseInfo()
+            }
+        }
+        failure {
+            script {
+                pipelineUtils.logSummary()
+                echo "Build ${env.BUILD_NUMBER} falhou!"
+            }
+        }
+        unstable {
+            script {
+                pipelineUtils.logSummary()
+                echo "Build ${env.BUILD_NUMBER} está instável!"
+            }
+        }
+    }
 }
+
+properties([
+    pipelineTriggers([]),
+    buildDiscarder(logRotator(numToKeepStr: '10')),
+    [$class: 'jenkins.model.BuildDiscarderProperty', strategy: [$class: 'hudson.tasks.LogRotator', numToKeepStr: '10']]
+])
