@@ -308,7 +308,7 @@ def generateReleaseDashboard() {
     ).trim()
     
     return """
-    <div style='font-family: Arial; padding: 10px; background: #f5f5f5; border: 1px solid #ddd;'>
+    <div style='font-family: Arial; padding: 10px; border: 1px solid #ddd;'>
         <h3>Release ${env.RELEASE_VERSION}</h3>
         <h4>Changes:</h4>
         <ul>${changelog}</ul>
