@@ -107,7 +107,7 @@ pipeline {
                 pipelineUtils.logSummary()
                 echo "Build ${env.BUILD_NUMBER} concluída com sucesso!"
                 currentBuild.description = pipelineUtils.generateReleaseDashboard()
-                archiveReleaseInfo()
+                pipelineUtils.archiveReleaseInfo()
             }
         }
         failure {
