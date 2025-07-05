@@ -70,18 +70,7 @@ pipeline {
                     )
                 }
             }
-        }
-
-        stage('Archive Artifact') {
-            steps {
-                script {
-                    pipelineUtils.archiveArtifact(
-                        projectDir: env.PROJECT_DIR,
-                        pattern: 'target/*.war'
-                    )
-                }
-            }
-        }
+        }        
 
         stage('Generate Release Notes') {
             steps {
@@ -94,6 +83,7 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
+                    sh 'ls target/'
                     withCredentials([usernamePassword(
                         credentialsId: 'tomcat-prod-credentials',
                         usernameVariable: 'TOMCAT_USER',
@@ -108,6 +98,17 @@ pipeline {
                             quiet: false 
                         )
                     }
+                }
+            }
+        }
+
+        stage('Archive Artifact') {
+            steps {
+                script {
+                    pipelineUtils.archiveArtifact(
+                        projectDir: env.PROJECT_DIR,
+                        pattern: 'target/*.war'
+                    )
                 }
             }
         }
