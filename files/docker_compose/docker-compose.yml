@@ -26,7 +26,11 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./tomcat_config/webapps:/usr/local/tomcat/webapps
+      - ./tomcat_config/webapps/docs:/usr/local/tomcat/webapps/docs
+      - ./tomcat_config/webapps/examples:/usr/local/tomcat/webapps/examples
+      - ./tomcat_config/webapps/host-manager:/usr/local/tomcat/webapps/host-manager
+      - ./tomcat_config/webapps/manager:/usr/local/tomcat/webapps/manager
+      - ./tomcat_config/webapps/ROOT:/usr/local/tomcat/webapps/ROOT
       - ./tomcat_config/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
     networks:
       - jenkins-network

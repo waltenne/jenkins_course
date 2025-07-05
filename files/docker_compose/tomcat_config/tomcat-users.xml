@@ -1,27 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tomcat-users xmlns="http://tomcat.apache.org/xml"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
-              version="1.0">
-
-  <!--
-    Roles disponíveis:
-      manager-gui    - Acesso via interface web
-      manager-script - Deploy automatizado via scripts
-      manager-jmx    - Acesso ao JMX Proxy
-      manager-status - Acesso somente a status
-      admin-gui      - Console de administração
-  -->
-
-  <!-- Roles -->
+<tomcat-users>
   <role rolename="manager-gui"/>
-  <role rolename="manager-script"/>
-  <role rolename="manager-jmx"/>
-  <role rolename="manager-status"/>
   <role rolename="admin-gui"/>
-
-  <!-- Único usuário com todas as permissões -->
-  <user username="jenkins_admin"
-        password="MudarSenhaForte"
-        roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui"/>
+  <user username="jenkins_admin" password="MudarSenhaForte" roles="manager-gui,admin-gui"/>
 </tomcat-users>
