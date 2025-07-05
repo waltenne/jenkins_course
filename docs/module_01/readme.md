@@ -103,7 +103,7 @@ NÓS AGENTES:
 
 ### 🖥️ Primeiro Job no Jenkins
 
-```
+```groovy
 pipeline {
     agent any
     stages {

@@ -31,8 +31,40 @@ pipeline {
 }
 ```
 
-**Multibranch Pipelines**  
-```
+**Multibranch Pipelines** 
+
+🌱 O que é uma Pipeline Multibranch?
+Pipeline Multibranch é um recurso do Jenkins que automaticamente descobre, cria e gerencia pipelines para cada branch ou pull request em um repositório de código.
+
+Em outras palavras:
+
+✅ Cada branch tem sua própria pipeline.
+✅ Jenkins detecta novos branches automaticamente.
+✅ Jenkins apaga pipelines de branches que foram removidos.
+✅ Isso permite que você tenha builds independentes por branch (ex.: main, develop, feature/nova-funcionalidade, etc.).
+
+💡 Como funciona na prática?
+Quando você cria uma multibranch pipeline:
+
+🔹 Você aponta para um repositório (por exemplo, GitHub, GitLab, Bitbucket).
+🔹 Jenkins escaneia todos os branches desse repositório.
+🔹 Para cada branch que contém um Jenkinsfile:
+🔹 Ele cria uma pipeline separada.
+🔹 Essa pipeline executa o que estiver definido no Jenkinsfile daquele branch.
+🔹 Se você criar um novo branch, Jenkins detecta automaticamente e gera a nova pipeline.
+🔹 Se o branch for excluído, Jenkins também remove a pipeline correspondente.
+
+🎯 Por que usar multibranch pipeline?
+Ela resolve vários problemas comuns em times que usam Git:
+
+🔹 Automatização do build por branch: Cada branch tem seu build isolado.
+🔹 Testes automáticos em pull requests: Você pode validar código antes de integrar.
+🔹 Independência de configuração: Cada branch pode ter seu próprio Jenkinsfile, permitindo configurações específicas.
+🔹 Menos manutenção: Jenkins faz a gestão automaticamente (descobrir, criar, excluir jobs).
+
+👉 [Documentação oficial](https://jenkins.io/doc/book/pipeline/multibranch/)
+
+```groovy
 // Jenkinsfile configurado para múltiplos branches
 def BRANCH_NAME = env.BRANCH_NAME
 
@@ -53,10 +85,20 @@ pipeline {
 }
 ```
 
+Como configurar?
+1. Crie um Jenkinsfile no repositório do projeto.
+2. Crie uma pipeline do tipo Multibranch.
+
+![pipeline-multibranch](./multibranch_config_1.png)
+![pipeline-multibranch](./multibranch_config_2.png)
+![pipeline-multibranch](./multibranch_config_3.png)
+
+
 ### 2. ☁️ Integração com Cloud
 
-**Deploy em Kubernetes**  
-```
+**Deploy em Kubernetes** 
+
+```groovy
 stage('Deploy K8s') {
     environment {
         KUBECONFIG = credentials('kubeconfig')
@@ -71,7 +113,7 @@ stage('Deploy K8s') {
 ```
 
 **Integração AWS (ECR + ECS)**  
-```
+```groovy
 stage('Build and Push to AWS') {
     steps {
         script {
@@ -85,7 +127,7 @@ stage('Build and Push to AWS') {
 ```
 
 **Terraform + Jenkins**  
-```
+```groovy
 stage('Provision Infrastructure') {
     environment {
         TF_VAR_access_key = credentials('aws-access-key')
@@ -104,7 +146,7 @@ stage('Provision Infrastructure') {
 ### 3. ⚡ Otimização
 
 **Caching de Dependências**  
-```
+```groovy
 stage('Build with Cache') {
     steps {
         script {
@@ -124,7 +166,7 @@ stage('Build with Cache') {
 ```
 
 **Execução Distribuída**  
-```
+```groovy
 pipeline {
     agent none
     stages {
@@ -148,7 +190,7 @@ pipeline {
 
 Definindo o agent como `label` dessa forma  ```agent { label 'Docker' }``` o Jenkins irá escalar a execução para qualquer Slave que tenha o label `Docker`, seguindo a configuração feita será escalado um container para cada execução, mas por exemplo caso tenha slaves fixos como por exemplo ec2, pode ser utilizado a mesma estratégia que o Jenkins irá escalar a execução para qualquer Slave que tenha a mesma label.
 
-```
+```groovy
 pipeline {
     agent { label 'Docker' }
     stages {
@@ -182,7 +224,7 @@ pipeline {
 
 
 **Monitoramento com Prometheus**  
-```
+```groovy
 post {
     always {
         script {
@@ -202,7 +244,7 @@ post {
 ```
 
 ## 🛠️ Pipeline Avançado Completo
-```
+```groovy
 pipeline {
     agent none
     options {
@@ -272,7 +314,7 @@ pipeline {
 
 ### 🛡️ Segurança
 
-```
+```groovy
 # Sempre use credenciais gerenciadas
 withCredentials([
   usernamePassword(
@@ -287,7 +329,7 @@ withCredentials([
 
 ### ⚡ Otimização de Performance
 
-```
+```groovy
 # Cache de dependências Maven
 stage('Build') {
   steps {
@@ -304,7 +346,7 @@ stage('Build') {
 
 ### 🔄 Agentes Dinâmicos
 
-```
+```groovy
 pipeline {
   agent none
   stages {
@@ -331,7 +373,7 @@ pipeline {
 ✔️ Usar credenciais gerenciadas pelo Jenkins  
 ✔️ Implementar tratamento de erros básico  
 
-```
+```groovy
 // Exemplo de tratamento de erro
 stage('Deploy') {
     steps {

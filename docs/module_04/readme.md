@@ -10,7 +10,7 @@
 ### 1. 🧩 Estruturas Complexas
 
 **Execução Paralela**  
-```
+```groovy
 stage('Build e Teste Paralelos') {
     parallel {
         stage('Build') {
@@ -28,7 +28,7 @@ stage('Build e Teste Paralelos') {
 ```
 
 **Condicionais com `when`**  
-```
+```groovy
 stage('Deploy Staging') {
     when {
         branch 'develop'
@@ -41,7 +41,7 @@ stage('Deploy Staging') {
 ```
 
 **Controle de Tempo e Tentativas**  
-```
+```groovy
 stage('Processo Demorado') {
     options {
         timeout(time: 15, unit: 'MINUTES')
@@ -56,7 +56,7 @@ stage('Processo Demorado') {
 ### 2. 🔧 Integração com Ferramentas
 
 **Build Java/Maven Completo**  
-```
+```groovy
 stage('Build Maven') {
     steps {
         sh 'mvn clean package'
@@ -71,7 +71,7 @@ stage('Build Maven') {
 ```
 
 **Pipeline com Relatórios**  
-```
+```groovy
 post {
     always {
         junit '**/target/surefire-reports/**/*.xml'
@@ -91,7 +91,7 @@ post {
 ### 3. 🛡️ Práticas Intermediárias
 
 **Parâmetros de Pipeline**  
-```
+```groovy
 pipeline {
     agent any
     parameters {
@@ -124,7 +124,7 @@ pipeline {
 ```
 
 **Gerenciamento Seguro de Credenciais**  
-```
+```groovy
 stage('Acesso Seguro') {
     steps {
         withCredentials([
@@ -145,7 +145,7 @@ stage('Acesso Seguro') {
 ```
 
 ## 🔍 Fluxo Completo Exemplo
-```
+```groovy
 pipeline {
     agent any
     options {

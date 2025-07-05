@@ -57,7 +57,7 @@ Docker:
 
 ### 🎭 Templates Dinâmicos
 
-```
+```groovy
 pipeline {
     agent {
         docker {
@@ -80,7 +80,7 @@ pipeline {
 
 ### ⚖️ Controle de Recursos
 
-```
+```groovy
 dockerTemplate(
     image: 'python:3.9',
     label: 'python-agent',
@@ -97,7 +97,7 @@ dockerTemplate(
 
 ### 🏝️ Ambientes Isolados
 
-```
+```groovy
 // Jenkinsfile
 stage('Teste NodeJS') {
     agent {
@@ -114,7 +114,7 @@ stage('Teste NodeJS') {
 
 ### 📈 Escalabilidade Horizontal
 
-```
+```groovy
 // Configuração no Jenkins
 dockerCloud {
     containerCap = 10
@@ -133,7 +133,7 @@ dockerCloud {
 
 ### 🧹 Limpeza Automática
 
-```
+```groovy
 post {
     always {
         script {
@@ -149,7 +149,7 @@ post {
 
 ### 🐙 Docker Compose para Jenkins + Agents
 
-```
+```yml
 version: '3.8'
 
 services:

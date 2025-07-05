@@ -1,32 +1,17 @@
 @Library('jenkins-shared-libs') _
 
-// Configurações globais de log
-def showCleanHeader() {
-    echo """
-    \033[34m
-    ===========================================
-    INÍCIO DA EXECUÇÃO - BRANCH: ${env.BRANCH_NAME}
-    Commit: ${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}
-    ===========================================
-    \033[0m
-    """
-}
-
 properties([
     disableConcurrentBuilds(),
-    buildDiscarder(logRotator(numToKeepStr: '5')),
-    pipelineTriggers([])
+    buildDiscarder(logRotator(numToKeepStr: '5'))
 ])
 
 pipeline {
-    options {
-        ansiColor('xterm')
-        timestamps()
-        quietPeriod(5)
-        skipDefaultCheckout(true)
-    }
-
     agent { label 'Docker' }
+
+    options {
+        ansiColor('xterm')  // Moved inside pipeline block
+        timestamps()        // Optional if you have the plugin
+    }
 
     environment {
         PROJECT_DIR = 'files/projects/java-17-example'

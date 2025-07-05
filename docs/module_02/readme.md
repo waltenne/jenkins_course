@@ -69,7 +69,7 @@ docker run \
 
 ## 3. 🎛️ Docker Compose Avançado
 
-```
+```yml
 version: '3.8'
 
 services:

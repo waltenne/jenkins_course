@@ -39,7 +39,7 @@
 
 ### 🔑 Gerenciamento de Credenciais
 
-```
+```groovy
 // Pipeline segura com credenciais
 withCredentials([
   usernamePassword(
@@ -94,7 +94,7 @@ Rotina segura:
 
 ### 🧹 Limpeza de Workspace
 
-```
+```groovy
 // Pipeline otimizada
 pipeline {
     options {
