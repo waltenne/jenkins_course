@@ -83,20 +83,21 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    sh 'ls target/'
-                    withCredentials([usernamePassword(
-                        credentialsId: 'tomcat-prod-credentials',
-                        usernameVariable: 'TOMCAT_USER',
-                        passwordVariable: 'TOMCAT_PASS'
-                    )]) {
-                        pipelineUtils.deployToTomcat(
-                            warFile: 'target/*.war',
-                            tomcatUrl: 'http://tomcat:8080',
-                            tomcatUser: env.TOMCAT_USER,
-                            tomcatPass: env.TOMCAT_PASS,
-                            contextPath: 'jenkins-demo',
-                            quiet: false 
-                        )
+                    dir(env.PROJECT_DIR) {
+                        withCredentials([usernamePassword(
+                            credentialsId: 'tomcat-prod-credentials',
+                            usernameVariable: 'TOMCAT_USER',
+                            passwordVariable: 'TOMCAT_PASS'
+                        )]) {
+                            pipelineUtils.deployToTomcat(
+                                warFile: 'target/*.war',
+                                tomcatUrl: 'http://tomcat:8080',
+                                tomcatUser: env.TOMCAT_USER,
+                                tomcatPass: env.TOMCAT_PASS,
+                                contextPath: 'jenkins-demo',
+                                quiet: false 
+                            )
+                        }
                     }
                 }
             }
