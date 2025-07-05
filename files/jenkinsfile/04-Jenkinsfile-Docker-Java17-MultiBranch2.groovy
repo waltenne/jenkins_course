@@ -82,7 +82,7 @@ pipeline {
                         
                         pipelineUtils.deployToTomcat(
                             warFile: warFile,
-                            tomcatUrl: 'http://tomcat:8081',
+                            tomcatUrl: 'http://tomcat:8080',
                             contextPath: 'jenkins-demo', // Sem a versão e sem .war
                             quiet: false 
                         )
