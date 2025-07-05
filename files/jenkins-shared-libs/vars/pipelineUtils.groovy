@@ -303,7 +303,11 @@ def deployToTomcat(Map config) {
             }
             echo "Deploy concluído com sucesso!"
         } catch (Exception e) {
-            error "Falha no deploy para Tomcat: ${e.message}"
+            if (e.message.contains('403')) {
+                error "Authentication failed - check Tomcat manager credentials and roles"
+            } else {
+                error "Falha no deploy para Tomcat: ${e.message}"
+            }
         }
     }
 }

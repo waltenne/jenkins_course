@@ -35,3 +35,5 @@ services:
 networks:
   jenkins-network:
     driver: bridge
+    name: jenkins-network
+    external: false
