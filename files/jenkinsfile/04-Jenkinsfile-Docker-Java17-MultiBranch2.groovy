@@ -1,18 +1,8 @@
 @Library('jenkins-shared-libs') _
 
-properties([
-    disableConcurrentBuilds(),
-    buildDiscarder(logRotator(numToKeepStr: '5'))
-])
-
 pipeline {
     agent { label 'Docker' }
-
-    options {
-        ansiColor('xterm')  // Moved inside pipeline block
-        timestamps()        // Optional if you have the plugin
-    }
-
+    
     environment {
         PROJECT_DIR = 'files/projects/java-17-example'
         COMMIT_PATTERN = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-zA-Z0-9_-]+\\))?(!)?: .+'
