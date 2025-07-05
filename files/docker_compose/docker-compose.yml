@@ -18,7 +18,20 @@ services:
     networks:
       - jenkins-network
     restart: unless-stopped
-
+  
+  tomcat:
+    image: tomcat:9.0
+    container_name: tomcat
+    hostname: tomcat
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./tomcat_config/webapps:/usr/local/tomcat/webapps
+      - ./tomcat_config/tomcat-users.xml:/usr/local/tomcat/conf/tomcat-users.xml
+    networks:
+      - jenkins-network
+    restart: unless-stopped
+    
 networks:
   jenkins-network:
     driver: bridge

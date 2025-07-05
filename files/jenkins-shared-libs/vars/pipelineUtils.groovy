@@ -211,7 +211,7 @@ ${changelog}
     }
 }
 
-def deployToTomcat(Map config) {
+def deployFakeToTomcat(Map config) {
     def defaults = [
         projectDir: 'files/projects/java-17-example',
         releaseVersion: null,
@@ -238,6 +238,80 @@ def deployToTomcat(Map config) {
             if (config.quiet) cpCmd += " > /dev/null 2>&1"
             sh cpCmd
             echo "Aplicação ${artifactName} implantada no Tomcat"
+        }
+    }
+}
+
+/**
+ * Realiza deploy de um artefato WAR em um Tomcat remoto usando o Manager API
+ * 
+ * @param config Mapa de configuração com os seguintes parâmetros:
+ *   - warFile: Caminho completo para o arquivo WAR (obrigatório)
+ *   - artifactName: Nome do artefato (opcional, padrão: nome do arquivo WAR)
+ *   - version: Versão do artefato (opcional)
+ *   - tomcatUrl: URL do Tomcat Manager (ex: http://localhost:8081)
+ *   - tomcatUser: Usuário com permissão manager-script
+ *   - tomcatPass: Senha do usuário
+ *   - contextPath: Caminho da aplicação (ex: 'myapp' para http://tomcat:8080/myapp)
+ *   - dryRun: Simula o deploy sem executar (default: false)
+ *   - quiet: Suprime output detalhado (default: true)
+ *   - forceDeploy: Força redeploy mesmo sem alterações (default: true)
+ */
+def deployToTomcat(Map config) {
+    // Validação dos parâmetros obrigatórios
+    if (!config.warFile) {
+        error "Parâmetro 'warFile' é obrigatório"
+    }
+    if (!config.tomcatUrl) {
+        error "Parâmetro 'tomcatUrl' é obrigatório"
+    }
+    
+    // Configurações padrão
+    def defaults = [
+        artifactName: config.warFile.split('/').last().replace('.war', ''),
+        version: null,
+        dryRun: false,
+        quiet: true,
+        forceDeploy: true,
+        contextPath: config.warFile.split('/').last().replace('.war', '')
+    ]
+    
+    config = defaults + config
+    
+    // Verifica se o arquivo WAR existe
+    if (!fileExists(config.warFile)) {
+        error "Arquivo WAR não encontrado: ${config.warFile}"
+    }
+    
+    // Monta o comando de deploy
+    def deployCmd = """
+        curl -v -u ${config.tomcatUser}:${config.tomcatPass} \
+        -T "${config.warFile}" \
+        "${config.tomcatUrl}/manager/text/deploy?path=/${config.contextPath}&update=true"
+    """
+    
+    if (config.quiet) {
+        deployCmd += " > /dev/null 2>&1"
+    }
+    
+    // Execução (simulada ou real)
+    if (config.dryRun) {
+        echo """
+        [DRY RUN] Simulando deploy para Tomcat:
+        - Arquivo: ${config.warFile}
+        - Artifact: ${config.artifactName}
+        - Versão: ${config.version ?: 'não especificada'}
+        - Tomcat: ${config.tomcatUrl}
+        - Contexto: /${config.contextPath}
+        - Comando: ${deployCmd.split('\n').collect { it.trim() }.join(' ')}
+        """
+    } else {
+        try {
+            echo "Iniciando deploy de ${config.artifactName} v${config.version ?: '?'} para ${config.tomcatUrl}/${config.contextPath}"
+            sh deployCmd
+            echo "Deploy concluído com sucesso!"
+        } catch (Exception e) {
+            error "Falha no deploy para Tomcat: ${e.message}"
         }
     }
 }

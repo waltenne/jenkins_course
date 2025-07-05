@@ -97,7 +97,7 @@ pipeline {
             }
             steps {
                 script {
-                    pipelineUtils.deployToTomcat(
+                    pipelineUtils.deployFakeToTomcat(
                         projectDir: env.PROJECT_DIR,
                         releaseVersion: env.RELEASE_VERSION
                     )
