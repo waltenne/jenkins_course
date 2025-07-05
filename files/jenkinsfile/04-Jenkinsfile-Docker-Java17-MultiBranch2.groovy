@@ -2,7 +2,7 @@
 
 pipeline {
     agent { label 'Docker' }
-    
+
     environment {
         PROJECT_DIR = 'files/projects/java-17-example'
         COMMIT_PATTERN = '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-zA-Z0-9_-]+\\))?(!)?: .+'
@@ -74,20 +74,18 @@ pipeline {
             steps {
                 script {
                     dir(env.PROJECT_DIR) {
-                        withCredentials([usernamePassword(
-                            credentialsId: 'tomcat-prod-credentials',
-                            usernameVariable: 'TOMCAT_USER',
-                            passwordVariable: 'TOMCAT_PASS'
-                        )]) {
-                            pipelineUtils.deployToTomcat(
-                                warFile: "target/jenkins-demo-${env.RELEASE_VERSION}.war",
-                                tomcatUrl: 'http://tomcat:8081',
-                                tomcatUser: env.TOMCAT_USER,
-                                tomcatPass: env.TOMCAT_PASS,
-                                contextPath: 'jenkins-demo-${env.RELEASE_VERSION}.war',
-                                quiet: false 
-                            )
+                        // Primeiro verifica se o arquivo existe
+                        def warFile = "target/jenkins-demo-${env.RELEASE_VERSION}.war"
+                        if (!fileExists(warFile)) {
+                            error "Arquivo WAR não encontrado: ${warFile}"
                         }
+                        
+                        pipelineUtils.deployToTomcat(
+                            warFile: warFile,
+                            tomcatUrl: 'http://tomcat:8081',
+                            contextPath: 'jenkins-demo', // Sem a versão e sem .war
+                            quiet: false 
+                        )
                     }
                 }
             }
