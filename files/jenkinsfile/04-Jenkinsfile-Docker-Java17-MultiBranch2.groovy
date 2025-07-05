@@ -84,18 +84,17 @@ pipeline {
             steps {
                 script {
                     dir(env.PROJECT_DIR) {
-                        sh 'ls -lah target/'
                         withCredentials([usernamePassword(
                             credentialsId: 'tomcat-prod-credentials',
                             usernameVariable: 'TOMCAT_USER',
                             passwordVariable: 'TOMCAT_PASS'
                         )]) {
                             pipelineUtils.deployToTomcat(
-                                warFile: 'target/*.war',
+                                warFile: "target/jenkins-demo-${env.RELEASE_VERSION}.war",
                                 tomcatUrl: 'http://tomcat:8081',
                                 tomcatUser: env.TOMCAT_USER,
                                 tomcatPass: env.TOMCAT_PASS,
-                                contextPath: 'jenkins-demo',
+                                contextPath: 'jenkins-demo-${env.RELEASE_VERSION}.war',
                                 quiet: false 
                             )
                         }
