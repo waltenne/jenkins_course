@@ -99,7 +99,7 @@ pipeline {
                         usernameVariable: 'TOMCAT_USER',
                         passwordVariable: 'TOMCAT_PASS'
                     )]) {
-                        deployToTomcat(
+                        pipelineUtils.deployToTomcat(
                             warFile: 'target/jenkins-demo-*.war',
                             tomcatUrl: 'http://tomcat:8080',
                             tomcatUser: env.TOMCAT_USER,
