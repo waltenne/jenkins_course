@@ -266,6 +266,9 @@ pipeline {
         failure {
             echo 'Executado em falha.'
         }
+        unstable {
+            echo 'Executado se o build ficou instável.'
+        }
         changed {
             echo 'Executado se o resultado mudou.'
         }
@@ -273,7 +276,16 @@ pipeline {
 }
 </pre>
 
-✅ **Dica:** O `post` é essencial para limpar recursos e enviar notificações.
+✅ **Dica:** O `post` é essencial para fazer tratativas após execução do pipeline como por exemplo
+
+1) Limpar recursos
+   1) Limpar a workspace com o `cleanWS()`
+2) Parar recursos
+   1) Por exemplo um build que sobe um compose no docker
+3) Enviar notificações
+   1) Por exemplo um email com o resultado do pipeline
+   2) Alertas para Discord/Slack
+
 
 ---
 
