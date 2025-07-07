@@ -8,67 +8,46 @@
 ## 1. 🏗️ Jenkins e Docker
 
 ### ✅ Benefícios Principais
-
 ```
 • Escalabilidade simplificada
 • Recuperação rápida em falhas (recriação de containers)
 ```
 
-### 🏷️ Imagens Oficiais
+## 2. 🚀 Inicializando o Lab com Docker Compose
 
+### 🐋 Configuração Inicial
+Para iniciar o ambiente Jenkins com Docker Compose:
+
+1. Certifique-se de ter o Docker e Docker Compose instalados
+2. Clone o repositório do projeto
+3. Navegue até o diretório contendo o docker-compose.yml
+
+Execute o seguinte comando:
 ```
-jenkins/jenkins:latest-jdk21      # Versão LTS com JDK 21
-jenkins/jenkins:latest-jdk17      # Versão LTS com JDK 17
-jenkins/jenkins:latest            # Última versão 
-```
-
-## 2. 🚀 Executando Jenkins em Docker
-
-### 🏃 Comando Básico de Inicialização
-
-```
-docker run -d \
-  --name jenkins \
-  -p 8080:8080 \
-  -p 50000:50000 \
-  -v jenkins_data:/var/jenkins_home \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -e JAVA_OPTS="-Xmx2048m -Xms512m" \
-  --restart unless-stopped \
-  jenkins/jenkins:lts-jdk17
+docker-compose up -d
 ```
 
-### 💾 Estratégias de Persistência
-
+### 🔑 Primeiro Acesso ao Jenkins
+1. Acesse o Jenkins no navegador: `http://localhost:8080`
+2. Obtenha a senha inicial com:
 ```
-# Volume nomeado (produção)
-docker volume create jenkins_data
-docker run -v jenkins_data:/var/jenkins_home ...
-
-# Bind mount (desenvolvimento)
-docker run -v $(pwd)/jenkins_home:/var/jenkins_home ...
-
-# Backup de volume
-docker run --rm -v jenkins_data:/source -v $(pwd):/backup \
-  alpine tar czf /backup/jenkins_backup_$(date +%Y%m%d).tar.gz -C /source .
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
+3. Siga o assistente de instalação
 
-### 🌐 Configuração de Rede
+### 🔌 Instalação de Plugins
+Após o primeiro login:
 
-```
-# Criar rede dedicada
-docker network create --driver bridge jenkins_network
-
-# Executar com configurações otimizadas
-docker run \
-  --network jenkins_network \
-  --dns 8.8.8.8 \
-  --dns-search example.com \
-  ...
-```
+1. No painel inicial, clique em "Manage Jenkins" > "Plugins"
+2. Navegue até a aba "Available plugins"
+3. Instale os plugins essenciais:
+   - Docker Pipeline
+   - Blue Ocean
+   - Git
+4. Marque a opção "Restart Jenkins after installation"
+5. Aguarde a reinicialização completa
 
 ## 3. 🎛️ Docker Compose Avançado
-
 ```yml
 version: '3.8'
 
@@ -123,8 +102,14 @@ networks:
         - subnet: 172.20.0.0/24
 ```
 
-## 5. 🚨 Troubleshooting
+## 4. 🏷️ Imagens Oficiais
+```
+jenkins/jenkins:latest-jdk21      # Versão LTS com JDK 21
+jenkins/jenkins:latest-jdk17      # Versão LTS com JDK 17
+jenkins/jenkins:latest            # Última versão 
+```
 
+## 5. 🚨 Troubleshooting
 ```
 # Acessar logs do container
 docker logs -f jenkins
@@ -190,6 +175,3 @@ E executar o seguinte comando
 ```bash
 docker build -t ubuntu-maven-node .
 ```
-
-Esse assunto será continuado no <a href="../module_05/readme.md">Jenkins Pipeline Avançado - Módulo 5
-</a>
