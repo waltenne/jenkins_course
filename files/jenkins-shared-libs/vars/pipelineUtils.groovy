@@ -270,7 +270,7 @@ def deployToTomcat(Map config) {
     
     // Monta o comando de deploy de forma segura
     def deployCmd = """
-        curl -v -u \${TOMCAT_USER}:\${TOMCAT_PASS} \
+        curl -u \${TOMCAT_USER}:\${TOMCAT_PASS} \
         -T "${config.warFile}" \
         "${config.tomcatUrl}/manager/text/deploy?path=/${config.contextPath}&update=true"
     """
@@ -279,10 +279,9 @@ def deployToTomcat(Map config) {
         deployCmd += " > /dev/null 2>&1"
     }
     
-    // Execução (simulada ou real)
     if (config.dryRun) {
         echo """
-        [DRY RUN] Simulando deploy para Tomcat:
+        [DRY RUN] Deploy para Tomcat:
         - Arquivo: ${config.warFile}
         - Artifact: ${config.artifactName}
         - Versão: ${config.version ?: 'não especificada'}
@@ -299,14 +298,28 @@ def deployToTomcat(Map config) {
                     passwordVariable: 'TOMCAT_PASS'
                 )
             ]) {
-                sh deployCmd
+                def response = sh(
+                    script: """
+                        curl -s -u ${'$'}{TOMCAT_USER}:${'$'}{TOMCAT_PASS} \\
+                            -T "${config.warFile}" \\
+                            "${config.tomcatUrl}/manager/text/deploy?path=/${config.contextPath}&update=true"
+                    """,
+                    returnStdout: true
+                ).trim()
+
+                echo "Resposta do Tomcat:\n${response}"
+
+                if (response.startsWith('OK')) {
+                    echo "Deploy concluído com sucesso!"
+                } else {
+                    error "Falha no deploy para Tomcat:\n${response}"
+                }
             }
-            echo "Deploy concluído com sucesso!"
         } catch (Exception e) {
             if (e.message.contains('403')) {
                 error "Authentication failed - check Tomcat manager credentials and roles"
             } else {
-                error "Falha no deploy para Tomcat: ${e.message}"
+                error "Erro inesperado durante o deploy: ${e.message}"
             }
         }
     }
