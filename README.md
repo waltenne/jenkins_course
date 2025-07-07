@@ -37,9 +37,9 @@
 ### 🚀 Nível Avançado
 <pre>
 📘 <a href="./docs/module_05/readme.md">Módulo 5</a>: Pipelines Cloud
-  • Kubernetes
-  • AWS/Azure/GCP
-  • Terraform integration
+  • MultibranchPipeline
+  • Otimização
+  
 
 📘 <a href="./docs/module_06/readme.md">Módulo 6</a>: Agents Docker
   • Templates dinâmicos
