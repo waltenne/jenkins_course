@@ -3,7 +3,7 @@
 <div align="center">
   <img src="https://cdn.icon-icons.com/icons2/2107/PNG/512/file_type_jenkins_icon_130515.png" width="120">
   <h2>Domine Automação de Pipelines de Software</h2>
-  <p>De conceitos básicos a técnicas avançadas com Docker e Kubernetes</p>
+  <p>De conceitos básicos a técnicas avançadas</p>
 </div>
 
 ## 📚 Módulos do Curso
@@ -37,7 +37,7 @@
 ### 🚀 Nível Avançado
 <pre>
 📘 <a href="./docs/module_05/readme.md">Módulo 5</a>: Pipelines Cloud
-  • MultibranchPipeline
+  • Multibranch Pipeline
   • Otimização
   
 
@@ -47,7 +47,7 @@
   • Isolamento
 
 📘 <a href="./docs/module_07/readme.md">Módulo 7</a>: Boas Práticas
-  • Segurança RBAC
+  • Segurança
   • Manutenção
   • Performance
 </pre>
